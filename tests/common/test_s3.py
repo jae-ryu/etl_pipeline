@@ -49,7 +49,7 @@ class TestS3BucketConnectorMethods(unittest.TestCase):
         # mocking s3 connection stop
         self.mock_s3.stop()
 
-    def test_list_files_prefix_ok(self):
+    def test_list_files_in_prefix_ok(self):
         """
         Tests list_files_in_prefix method for getting 2 files keys
         as listed on the mocked s3 bucket
@@ -64,13 +64,13 @@ class TestS3BucketConnectorMethods(unittest.TestCase):
         self.s3_bucket.put_object(Body=csv_content, Key=key1_exp)
         self.s3_bucket.put_object(Body=csv_content, Key=key2_exp)
         # Method execution
-        list_result = self.s3_bucket_conn.list_files_in_prefix(prefix_exp)
+        list_result = self.s3_bucket_connector.list_files_in_prefix(prefix_exp)
         # Tests after method execution
         self.assertEqual(len(list_result), 2)
         self.assertIn(key1_exp, list_result)
         self.assertIn(key2_exp, list_result)
         # Cleanup after tests
-        self.s3_bucket.delete_object(
+        self.s3_bucket.delete_objects(
             Delete={"Objects": [{"Key": key1_exp}, {"Key": key2_exp}]}
         )
 
@@ -78,7 +78,15 @@ class TestS3BucketConnectorMethods(unittest.TestCase):
         """
         Tests list_files_in_prefix in case of wrong/nonexistent prefix
         """
-        pass
+        # Expected ersults
+        prefix_exp = "no-prefix/"
+        # key1_exp = f"{prefix_exp}test1.csv"
+        # key2_exp = f"{prefix_exp}test2.csv"
+        # Method execution
+        list_result = self.s3_bucket_connector.list_files_in_prefix(prefix_exp)
+        # Tests after method execution
+        self.assertEqual(len(list_result), 0)
+        self.assertTrue(not list_result)
 
 
 if __name__ == "__main__":
